@@ -1,0 +1,163 @@
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PollsApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri&family=Josefin+Sans:wght@300&family=Merriweather+Sans:wght@300&display=swap" rel="stylesheet">    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+      body{
+      background :  #f2f2f2 fixed;
+      }
+
+    nav{
+        background-color:#3f51b5;
+        font-family: 'Hind Siliguri', sans-serif;
+        font-family: 'Josefin Sans', sans-serif;
+        font-family: 'Merriweather Sans', sans-serif;
+
+    }
+
+    ul a{
+        color:#b4bbe4 ;
+        margin-right:10px;
+        margin-left:10px;
+        transition:0.15s ease;
+    }
+    .media{
+    border-right:1px solid #dee2e6 !important;
+    border-top: 1px solid #dee2e6 !important;
+    border-left: 2px solid #3f51b5!important;
+    border-bottom: 1px solid #dee2e6 !important;
+    }
+    ul a:hover {
+        color:white;
+
+    }
+    .first{
+        margin-left:10px;
+    }
+    a.vote:hover{
+    transition:0.2s ease;
+        background-color:#2e3b84 !important;
+    }
+
+    button.vote:hover{
+    background-color:#2e3b84 !important;
+    }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark  sticky-top">
+    <a class="navbar-brand mr-4" href="#" style="font-size:25px; letter-spacing:1px;">Poll's Up</a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navres"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navres">
+        <ul class="navbar-nav first">
+            <a class="nav-item nav-link " href="{% url 'Home' %}">Home</a>
+            <a class="nav-item nav-link" href="" data-target="#myModal" data-toggle="modal">Create Poll</a>
+
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                <img class="rounded-circle mt-1" src="{{ user.socialaccount_set.all.0.get_avatar_url }}"  width="30px" height="30px" />
+            {% else %}
+                <a href="{% provider_login_url 'google' %}" class="nav-item nav-link mr-2"><img class="" width="20px" style="" alt="Google sign-in"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                    Sign-In</a>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Create Poll</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+                    <form id="formmodal" class="form " method="POST" action="{% url 'createpoll' %}">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Create Poll</legend>
+                        <div class="form-group">
+                        <label for="quest">Question : </label>
+                        <input type="text" class="form-control" id="quest" name="question" placeholder="Enter question" style="height:50px;" required>
+                    </div>
+                        <div style="margin:8px;">
+                            <label>Option 1 : </label>
+                            <input type="text"  class="ml-2 " name="op1" placeholder="Enter option 1 "style="height:40px; width:65%; border: 1px solid #ced4da; border-radius: 0.25rem; margin-right:5px; " required>
+                        </div>
+                         <div style="margin:8px;">
+                            <label>Option 2 : </label>
+                            <input type="text"  class="ml-2" name="op2" placeholder="Enter option 2 " style="height:40px; width:65%; border: 1px solid #ced4da; border-radius: 0.25rem; margin-right:5px; " required>
+                        </div>
+                         <div style="margin:8px;">
+                            <label>Option 3 : </label>
+                            <input type="text" class="ml-2" name="op3" placeholder="Enter option 3 " style="height:40px; width:65%; border: 1px solid #ced4da; border-radius: 0.25rem;  margin-right:5px;" required>
+                        </div>
+                        <button type="submit" class="btn btn-block vote text-white my-4" style="background-color:#3f51b5;">Create Poll</button>
+                    </fieldset>
+                </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 mt-3">
+            <div class="container mt-3">
+                <div class="media bg-light shadow p-2 mt-3 mb-3 " >
+                <img class="rounded-circle mr-1 mt-1" src="{{ poll.user.socialaccount_set.all.0.get_avatar_url }}"  width="27px" height="27px" />
+                <div class="media-body mt-1 mb-1">
+
+                <h5>{{poll.user.username}} <small class="ml-2"><i>Posted on February 19, 2016</i></small></h5>
+                <h4 class="mb-3" id="p{{i.id}}">{{poll.poll}}</h4>
+                    <div class="form-check my-2">
+                      <p class="form-check-label" style="font-size:18px;">
+                       {{ poll.op1 }}    -- <span class="ml-3">{{ poll.op1_cnt }} votes</span>
+                      </p>
+                    </div>
+                    <div class="form-check my-2">
+                      <p class="form-check-label" style="font-size:18px;">
+                    {{ poll.op2 }}    -- <span class="ml-3">{{ poll.op2_cnt }} votes</span>
+                      </p>
+                    </div>
+                    <div class="form-check my-2">
+                      <p class="form-check-label" style="font-size:18px;">
+                     {{ poll.op3 }}    -- <span class="ml-3">{{ poll.op3_cnt }} votes</span>
+                      </p>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
